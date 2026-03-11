@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Training</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --text: #1d232a;
+      --muted: #6c7a89;
+      --border: rgba(36, 52, 80, 0.12);
+      --accent: #3b82f6;
+      --shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+      --radius: 16px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      color: var(--text);
+      background: linear-gradient(rgba(143, 142, 142, 0.6), rgba(255,255,255,0.6)),
+        url("../paradise.jpg") center/cover no-repeat,
+        radial-gradient(circle at top, #eef3ff 0%, var(--bg) 65%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2.25rem 1.5rem;
+    }
+
+    .app-container {
+      width: min(520px, 100%);
+      background: var(--panel);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      padding: 2.25rem 2rem 1.75rem;
+    }
+
+    h1 {
+      margin: 0 0 1rem;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+      font-weight: 700;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      padding: 0.85rem 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(41, 60, 84, 0.16);
+      background: #fafbfd;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      resize: vertical;
+      transition: border 160ms ease, box-shadow 160ms ease;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: rgba(59, 130, 246, 0.55);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16);
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.15rem;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 25px rgba(59, 130, 246, 0.22);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 6px 14px rgba(59, 130, 246, 0.2);
+    }
+
+    #savedNotes {
+      margin-top: 1.75rem;
+      font-size: 0.95rem;
+    }
+
+    .note-list {
+      list-style: none;
+      margin: 0.7rem 0 0;
+      padding: 0;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .note-list li {
+      display: grid;
+      gap: 0.55rem;
+      padding: 0.85rem 0.95rem;
+      background: #fcfdff;
+      border: 1px solid rgba(36, 52, 80, 0.08);
+      border-radius: var(--radius-sm);
+    }
+
+    .note-list pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.92rem;
+      color: var(--text);
+    }
+
+    .deleteNote {
+      justify-self: start;
+      padding: 0.5rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid rgba(220, 38, 38, 0.35);
+      background: rgba(244, 63, 94, 0.12);
+      color: #b91c1c;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .deleteNote:hover {
+      background: rgba(244, 63, 94, 0.18);
+    }
+  </style>
+<!-- The script below saves notes to local storage and displays them below -->
+</head>
+<body>
+<!-- create a simple UI layout with a title, textarea input, and a save button -->
+  <h1>Agent Training</h1>
+  <textarea id="trainingData" rows="10" cols="50" placeholder="Enter training data here..."></textarea><br />
+  <button id="saveButton">Save Training Data</button>
+
+  <input
+    id="searchInput"
+    type="search"
+    placeholder="Search saved notes..."
+    aria-label="Search saved notes"
+    style="margin-top:1.25rem; width:100%; padding:0.75rem 0.85rem; border-radius:var(--radius-sm); border:1px solid rgba(41,60,84,0.16); background:#fafbfd;"
+  />
+
+  <div id="savedNotes" style="margin-top:20px;"></div>
+
+  <script>
+    const STORAGE_KEY = 'trainingData';
+
+    function loadNotes() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      try { return JSON.parse(raw); } catch { return []; }
+    }
+
+    function saveNotes(notes) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function displaySavedNotes(filter = '') {
+      const notes = loadNotes();
+      const notesDiv = document.getElementById('savedNotes');
+      const normalizedFilter = filter.trim().toLowerCase();
+
+      if (!notes.length) {
+        notesDiv.innerHTML = '';
+        return;
+      }
+
+      const filteredNotes = notes
+        .map((note, idx) => ({ note, idx }))
+        .filter(({ note }) =>
+          !normalizedFilter || note.toLowerCase().includes(normalizedFilter)
+        );
+
+      if (!filteredNotes.length) {
+        notesDiv.innerHTML = `
+          <h3>Saved Notes:</h3>
+          <p style="margin:0.75rem 0 0; color: var(--muted);">
+            No notes match your search.
+          </p>
+        `;
+        return;
+      }
+
+      notesDiv.innerHTML = `
+        <h3>Saved Notes:</h3>
+        <ul class="note-list">
+          ${filteredNotes
+            .map(
+              ({ note, idx }) => `
+        <li>
+          <pre>${escapeHtml(note)}</pre>
+          <button class="deleteNote" data-index="${idx}">Delete</button>
+        </li>`
+            )
+            .join('')}
+        </ul>`;
+
+      document.querySelectorAll('.deleteNote').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const idx = Number(btn.dataset.index);
+          const updated = loadNotes().filter((_, i) => i !== idx);
+          saveNotes(updated);
+          displaySavedNotes(document.getElementById('searchInput').value);
+        });
+      });
+    }
+
+    document.getElementById('saveButton').addEventListener('click', () => {
+      const trainingData = document.getElementById('trainingData').value.trim();
+      if (!trainingData) {
+        alert('Please enter a note before saving.');
+        return;
+      }
+
+      const notes = loadNotes();
+      notes.push(trainingData);
+      saveNotes(notes);
+      document.getElementById('trainingData').value = '';
+      displaySavedNotes(document.getElementById('searchInput').value);
+      alert('Training data saved successfully!');
+    });
+
+    document.getElementById('searchInput').addEventListener('input', (event) => {
+      displaySavedNotes(event.target.value);
+    });
+
+    displaySavedNotes();
+  </script> 
+</body>
+</html>

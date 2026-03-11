@@ -1,0 +1,117 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-image: url("paradise.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.app-title {
+    font-size: 2rem;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 18px;
+    text-shadow: 0 1px 10px rgba(0, 0, 0, 0.35);
+}
+
+.calculator {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    width: min(340px, 100%);
+    max-width: 100%;
+}
+
+.display {
+    background: #333;
+    color: #fff;
+    font-size: 2.5em;
+    padding: 20px;
+    border-radius: 5px;
+    text-align: right;
+    margin-bottom: 20px;
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.btn {
+    padding: 20px;
+    font-size: 1.5em;
+    border: none;
+    border-radius: 5px;
+    background: #f0f0f0;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn:hover {
+    background: #e0e0e0;
+    transform: scale(1.05);
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-operator {
+    background: #667eea;
+    color: white;
+}
+
+.btn-operator:hover {
+    background: #764ba2;
+}
+
+.btn-clear {
+    background: #ff6b6b;
+    color: white;
+}
+
+.btn-clear:hover {
+    background: #ee5a52;
+}
+
+.btn-equals {
+    background: #51cf66;
+    color: white;
+}
+
+.btn-equals:hover {
+    background: #40c057;
+}
+
+/* Responsive tweaks for smaller screens */
+@media (max-width: 420px) {
+    .display {
+        font-size: 2rem;
+        padding: 16px;
+    }
+
+    .btn {
+        padding: 16px;
+        font-size: 1.25em;
+    }
+
+    .calculator {
+        padding: 16px;
+    }
+}

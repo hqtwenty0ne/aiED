@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Mood Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            color: #333;
+        }
+        .emoji-display {
+            font-size: 5rem;
+            margin: 20px 0;
+        }
+        .generate-btn {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .generate-btn:hover {
+            background-color: #0056b3;
+        }
+</head>
+<body>
+    <script>
+        const emojis = ['😀', '😂', '😍', '😎', '😭', '😡', '🤔', '🙈', '👻', '💩'];
+        const display = document.getElementById('emoji-display');
+        const button = document.getElementById('generate-btn');
+
+        button.addEventListener('click', () => {
+            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            display.textContent = randomEmoji;
+        });
+</body>
+</html>
